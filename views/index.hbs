@@ -1,0 +1,122 @@
+<h1>mock list</h1>
+<div id="list"></div>
+<h1>products</h1>
+<div id="products"></div>
+<script type="module">
+    const list = document.getElementById('list');
+    const products = document.getElementById('products');
+    const websocketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const websockeUrl = `${websocketProtocol}://${window.location.hostname}:4000/ws`;
+    const socket = new WebSocket(websockeUrl);
+    socket.onopen = () => {
+        console.log('websocket connected');
+    }
+    socket.onmessage = (event) => {
+    const {type, data} = JSON.parse(event?.data || '{}');
+    if (type === 'pay-mock') {
+        const newItem = document.createElement('pay-component');
+        newItem.setAttribute('type', data);
+        list.appendChild(newItem);
+        newItem.addEventListener('formSubmit', (event) => {
+        event.preventDefault();
+        const formData = event.detail.formData;
+        fetch('/api/mock/pay', {
+            method: 'POST',
+            body: JSON.stringify({
+            type: formData.result,
+            code: formData.code,
+            }),
+            headers: {
+            "content-type": "application/json",
+            },
+        })
+        .then(() => {
+            list.removeChild(newItem);
+            const newCookingItem = document.createElement('cooking-component');
+            setTimeout(() => {
+            list.appendChild(newCookingItem);
+            newCookingItem.addEventListener('formSubmit', (event) => {
+                event.preventDefault();
+                const formData1 = event.detail.formData;
+                fetch('http://localhost:3000/api/mock/cooking', {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: formData1.result,
+                    code: formData1.code,
+                }),
+                headers: {
+                    "content-type": "application/json",
+                },
+                })
+                .then(() => {
+                list.removeChild(newCookingItem);
+                })
+                .catch((error) => {
+                console.warn('error', error);
+                })
+            });
+            }, 3000);
+        })
+        .catch((error) => {
+            console.warn('error', error);
+        })
+        })
+    }
+    }
+    fetch('http://localhost:3000/api/products', {
+    method: 'GET',
+    headers: {
+        "content-type": "application/json",
+    }
+    })
+    .then((response) => {
+    return response.json();
+    })
+    .then((data) => {
+    data.forEach((item) => {
+        const controlproduct = document.createElement('control-product');
+        controlproduct.setAttribute('id', item.id);
+        controlproduct.setAttribute('name', item.name);
+        controlproduct.setAttribute('price', `${item.price}`);
+        controlproduct.setAttribute('toolPrice', `${item.toolPrice}`);
+        controlproduct.setAttribute('cookingTime', `${item.cookingTime}`);
+        controlproduct.setAttribute('discount', `${item.discount}`);
+        controlproduct.setAttribute('description', item.description);
+        controlproduct.setAttribute('image', item.image);
+        if (item.isHot) {
+        controlproduct.setAttribute('hot', '');
+        }
+        if (item.isSaleout) {
+        controlproduct.setAttribute('saleout', '');
+        }
+        if (item.isBrand) {
+        controlproduct.setAttribute('brand', '');
+        }
+        if (item.isNew) {
+        controlproduct.setAttribute('new', '');
+        }
+        if (item.hasTool) {
+        controlproduct.setAttribute('tool', '');
+        }
+        controlproduct.addEventListener('formSubmit', (event) => {
+        event.preventDefault();
+        const formData = event.detail;
+        const { price, toolPrice, cookingTime, discount,...others} = formData;
+        fetch('http://localhost:3000/api/mock/product', {
+            method: 'POST',
+            body: JSON.stringify({
+            ...others,
+            price: Number(price),
+            toolPrice: Number(toolPrice),
+            cookingTime: Number(cookingTime),
+            discount: Number(discount),
+            }),
+            headers: {
+            "content-type": "application/json",
+            },
+        })
+        })
+        products.appendChild(controlproduct);
+    })
+    })
+</script>

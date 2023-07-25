@@ -1,0 +1,55 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+form {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+fieldset {
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+label {
+  display: block;
+  margin-bottom: 8px;
+}
+button {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #eee;
+  cursor: pointer;
+}
+#list {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: 120px;
+  gap: 8px;
+}
+#products {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 300px;
+  gap: 8px;
+}
